@@ -1,4 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -40,3 +43,12 @@ def get_posts(post_id: int):
         if post["id"] == post_id:
             return {"data": post}
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {post_id} not found")
+
+@app.get("/post/{post_id}", include_in_schema=False)
+def get_post(request: Request, post_id: int):
+    for post in posts:
+        if post["id"] == post_id:
+            return templates.TemplateResponse(request, "post.html",
+                                              context={"post": post, "title": {post['title']}})
+    return templates.TemplateResponse(request, "error.html",
+                                        context={"message": "Post not found", "status_code": 404})

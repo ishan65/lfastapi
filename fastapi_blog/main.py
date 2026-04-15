@@ -32,3 +32,10 @@ def home(request: Request):
 @app.get("/posts")
 def get_posts():
     return {"data": posts}
+
+@app.get("/posts/{post_id}")
+def get_posts(post_id: int):
+    for post in posts:
+        if post["id"] == post_id:
+            return {"data": post}
+    return {"data": "Post not found"}

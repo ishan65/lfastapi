@@ -37,7 +37,7 @@ def home(request: Request):
 def get_posts():
     return {"data": posts}
 
-@app.get("/posts/{post_id}")
+@app.get("/api/post/{post_id}")
 def get_posts(post_id: int):
     for post in posts:
         if post["id"] == post_id:
@@ -50,5 +50,48 @@ def get_post(request: Request, post_id: int):
         if post["id"] == post_id:
             return templates.TemplateResponse(request, "post.html",
                                               context={"post": post, "title": {post['title']}})
-    return templates.TemplateResponse(request, "error.html",
-                                        context={"message": "Post not found", "status_code": 404})
+
+
+## StarletteHTTPException Handler
+@app.exception_handler(StarletteHTTPException)
+def general_http_exception_handler(request: Request, exception: StarletteHTTPException):
+    message = (
+        exception.detail
+        if exception.detail
+        else "An error occurred. Please check your request and try again."
+    )
+
+    if request.url.path.startswith("/api"):
+        return JSONResponse(
+            status_code=exception.status_code,
+            content={"detail": message},
+        )
+    return templates.TemplateResponse(
+        request,
+        "error.html",
+        {
+            "status_code": exception.status_code,
+            "title": exception.status_code,
+            "message": message,
+        },
+        status_code=exception.status_code,
+    )
+
+### RequestValidationError Handler
+@app.exception_handler(RequestValidationError)
+def validation_exception_handler(request: Request, exception: RequestValidationError):
+    if request.url.path.startswith("/api"):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={"detail": exception.errors()},
+        )
+    return templates.TemplateResponse(
+        request,
+        "error.html",
+        {
+            "status_code": status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "title": status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "message": "Invalid request. Please check your input and try again.",
+        },
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+    )

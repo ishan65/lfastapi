@@ -5,6 +5,7 @@
 ```
 uv init fastapi_blog
 uv add "fastapi[standard]"
+uv add sqlalchemy
 
 BLUE+im530@UMD-ADMIN984737 MINGW64 ~/Videos/fastapi (main)
 $ cd fastapi_blog/

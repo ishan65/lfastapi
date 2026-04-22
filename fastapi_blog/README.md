@@ -9,6 +9,10 @@ uv add sqlalchemy
 uv add aiosqlite
 uv add greenlet
 
+uv add pwdlib[argon2]
+uv add pyjwt
+uv add pydantic-settings
+
 BLUE+im530@UMD-ADMIN984737 MINGW64 ~/Videos/fastapi (main)
 $ cd fastapi_blog/
 (fastapi)

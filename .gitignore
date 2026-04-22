@@ -1,2 +1,4 @@
 fastapi_blog/.venv
 fastapi_blog/.venv/*
+fastapi_blog/.env
+fastapi_blog/.env.*
